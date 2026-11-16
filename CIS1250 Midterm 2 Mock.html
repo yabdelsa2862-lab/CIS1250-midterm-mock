@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CIS1250 Midterm 2 Mock</title>
+<style>
+:root{--bg:#f4f7f9;--fg:#14202b;--card:#fff;--mut:#5b6b78;--line:#d5dee5;--acc:#1f6f8b;--accfg:#fff;--ok:#1b7f4b;--okbg:#e2f4ea;--bad:#b3261e;--badbg:#fbe7e5;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1820;--fg:#e6eef3;--card:#16242e;--mut:#93a5b2;--line:#2a3b47;--acc:#5bb6d3;--accfg:#06202b;--ok:#6fd19a;--okbg:#14352a;--bad:#ff8f86;--badbg:#3a1d1b}}
+:root[data-theme="dark"]{--bg:#0e1820;--fg:#e6eef3;--card:#16242e;--mut:#93a5b2;--line:#2a3b47;--acc:#5bb6d3;--accfg:#06202b;--ok:#6fd19a;--okbg:#14352a;--bad:#ff8f86;--badbg:#3a1d1b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:660px;margin:0 auto;padding:18px 16px 40px}
+h1{font-size:1.35rem;margin:0 0 4px}
+.sub{color:var(--mut);font-size:.9rem;margin:0 0 14px}
+.bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:6px 12px;font:inherit;font-size:.85rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
+.stat{display:flex;justify-content:space-between;color:var(--mut);font-size:.85rem;margin:6px 0}
+.prog{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.prog i{display:block;height:100%;background:var(--acc);width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+.tag{font-size:.8rem;color:var(--mut);margin-bottom:6px}
+.q{font-size:1.08rem;font-weight:600;white-space:pre-wrap;margin:0 0 12px}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;overflow-x:auto;font:.85rem/1.45 ui-monospace,Menlo,Consolas,monospace;margin:0 0 12px}
+.opt{display:block;width:100%;text-align:left;margin:0 0 8px;padding:11px 13px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:8px;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--acc)}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.bad{background:var(--badbg);border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.fb{margin-top:10px;padding:10px 12px;border-radius:8px;font-size:.93rem}
+.fb.ok{background:var(--okbg);color:var(--ok)}.fb.bad{background:var(--badbg);color:var(--bad)}
+.fb span{color:var(--fg);display:block;margin-top:3px}
+textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit;padding:10px;margin-bottom:10px;resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+main>.row{margin-bottom:8px}
+.btn{border:1px solid var(--acc);background:var(--acc);color:var(--accfg);border-radius:8px;padding:8px 13px;font:inherit;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.alt{background:transparent;color:var(--acc)}
+.btn:disabled{opacity:.45;cursor:default}
+.note{font-size:.85rem;color:var(--mut);margin-top:8px}
+.end{text-align:center}.end h2{margin:0 0 6px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<h1>CIS1250 midterm 2 mock test</h1>
+<p class="sub">Covers Oct 20 onward: design principles, prototyping, accessibility, brainstorming, communication and Python functions. T/F and multiple choice are graded here. Short answer: copy the prompt into Gemini.</p>
+<div class="row"><a class="btn alt" href="index.html">All midterms</a></div>
+<div class="bar" id="modes"></div>
+<div class="bar"><button class="chip" id="shuf" aria-pressed="true">Shuffle on</button><button class="chip" id="rst">Restart</button></div>
+<div class="stat"><span id="pos"></span><span id="sc"></span></div>
+<div class="prog"><i id="pg"></i></div>
+<div class="card" id="card"></div>
+</main>
+<script>
+const TF=(q,a,e)=>({t:'tf',q,a,e});
+const MC=(q,o,a,e,c)=>({t:'mc',q,o,a,e,c});
+const SA=(q,c)=>({t:'sa',q,c});
+const Q=[
+TF("A requirements document can also be called a functional specification or software requirements specification.",true,"Other names: functional specifications, requirements definitions, software requirements specification."),
+TF("Each requirement should get a unique number so it can be referenced and traced.",true,"Unique IDs let you reference a requirement and show which requirements created others."),
+TF("A requirements document should be hard to change so it stays stable.",false,"It should be easy to change. Otherwise changes pile up in batches and the document goes out of date."),
+TF("Combining two requirements into one sentence is good practice.",false,"One idea per sentence. Combining two requirements is on the checklist of requirements problems."),
+TF("Design choices should be written in the requirements document as requirements.",false,"Requirements say WHAT. Design says HOW. Listing design choices as requirements is a known problem."),
+TF("Software design answers the 'How are you solving the problem?' question.",true,"Requirements = what/why. Design = how."),
+TF("Cohesion means each module should have a single, focused responsibility.",true,"High cohesion = one job per module."),
+TF("In good design, modules should be tightly coupled to each other.",false,"Modules should be loosely coupled so a change in one doesn't break the others."),
+TF("The empirical approach to design is based on observation, experimentation and iteration.",true,"Empirical = data and user feedback. Rational = logic, theory and formal methods."),
+TF("Time, budget, team and tools are examples of constraints, while technical, regulatory, performance and security are resources.",false,"Reversed. Resources: time, budget, team, tools. Constraints: technical, regulatory, performance, security."),
+TF("A prototype is a fully functional final product.",false,"A prototype is a non-functional mock-up, 'reasonably close'."),
+TF("Paper prototyping is mainly about making the design look pretty.",false,"It's about the process flow, not the pretty."),
+TF("In a paper prototype usability session, the facilitator should hint at the right step when the participant is stuck.",false,"Do NOT help and do NOT lead. Document everything."),
+TF("Paper prototyping is a low-fidelity prototype, and wireframing is a high-fidelity prototype.",true,"Lo-fi = paper. Hi-fi = wireframes."),
+TF("The 80/20 rule suggests a small share of causes (about 20%) produces most (about 80%) of the effects.",true,"Pareto principle. Example: fixing the top 20% of reported bugs removes about 80% of crashes."),
+TF("Providing undo and confirmation dialogs supports the accessibility characteristic of forgiveness.",true,"Forgiveness minimizes the occurrence and consequences of errors."),
+TF("Affordance is a property where an object's physical characteristics influence its function.",true,"Buttons should look clickable, sliders draggable."),
+TF("In brainstorming, constructive negative comments are encouraged during idea generation.",false,"Don't be judgemental. No negative comments, including non-verbal cues."),
+TF("In brainstorming, you should aim for quality first and avoid generating too many ideas.",false,"Aim for quantity. Quantity leads to quality."),
+TF("Brainstorming works best with about 5-10 participants and a time limit.",true,"Also set a goal, appoint a facilitator and give context."),
+TF("Nudge means altering behaviour without restricting options or changing incentives.",true,"Example: making the healthy option the default."),
+TF("Ockham's Razor says that, given functionally equivalent designs, the simplest should be selected.",true,"Simpler is better when function is equal."),
+TF("In Python, the code inside a def block runs as soon as the function is defined.",false,"Defining only creates the function. Calling it runs it."),
+TF("print() and return do the same thing in a function.",false,"print shows text on screen. return hands a value back so the program can keep using it."),
+TF("A variable created inside a function can be used anywhere in the program.",false,"It has local scope. Using it outside raises a NameError."),
+TF("A Python function with no return statement gives back None.",true,"Using that result later can cause a TypeError, like None * 2."),
+TF("A parameter is the variable in the def line, and an argument is the value you pass when calling.",true,"def greet(name): name is the parameter. greet('Ada'): 'Ada' is the argument."),
+TF("Leading questions are a good way to gather honest requirements from users.",false,"Avoid leading questions. They push the user toward the answer you want."),
+TF("'As a system, I want to log errors so that I can debug later' is a well-formed user story.",false,"User stories are from the user's perspective. 'The system' is not a user."),
+TF("The picture superiority effect says words are remembered better than pictures.",false,"Pictures are remembered better than words."),
+MC("Which is NOT one of the principles of good software design from lecture?",["Modularity","Simplicity","Cohesion","Redundancy"],3,"The principles were modularity, simplicity, cohesion and loose coupling."),
+MC("'Modules should be loosely connected' describes which principle?",["Cohesion","Coupling","Abstraction","Prototyping"],1,"Low (loose) coupling between modules."),
+MC("Which is a RESOURCE in the design stage (not a constraint)?",["Regulatory limits","Security","Team","Performance"],2,"Resources: time, budget, team, tools."),
+MC("Which is a CONSTRAINT in the design stage?",["Tools","Security","Budget","Team"],1,"Constraints: technical, regulatory, performance, security."),
+MC("A design approach based on logic, theory, formal methodologies and careful planning is called:",["Empirical","Rational","Agile","Iterative only"],1,"Rational = logic and predefined principles. Empirical = observation and feedback."),
+MC("In the small bookstore app, which is NOT one of the stakeholders identified?",["Owner(s)","Employees","Suppliers","Competing bookstores"],3,"Stakeholders: owners, employees, customers, suppliers."),
+MC("In the bookstore app, 'process purchases, receipts, refunds and discounts' belongs to which module?",["Inventory Management","Sales","Employee Management","Reporting"],1,"The Sales Module handles purchases, receipts, refunds, discounts and loyalty."),
+MC("Which is a low-fidelity prototype?",["Paper sketch with sticky notes","Wireframe","Finished app","Source code"],0,"Lo-fi = paper prototyping."),
+MC("Which is NOT a role in a paper prototyping usability session?",["Facilitator","Human-computer actor","Observer / note taker","Programmer who fixes bugs live"],3,"The three roles: facilitator, human-computer actor, observer/note taker."),
+MC("During a paper prototype usability session, the facilitator should:",["Hint where to tap","Not help or lead, and document everything","Explain the whole design first","Stop the test when the user struggles"],1,"Do NOT help, do NOT lead, document everything."),
+MC("Stop/Start/Continue and Loved/Hated/Change are used in:",["The post mortem after a session","Writing requirements","Debugging","Voting"],0,"After the session: what worked, what didn't, what's missing."),
+MC("Which is NOT a reason to prototype?",["Validate requirements","Run usability studies","Try out design options","Replace the final implementation"],3,"Prototypes explore and validate. They don't replace implementation."),
+MC("Which lists the four characteristics of accessible design?",["Perceptibility, operability, simplicity, forgiveness","Speed, cost, size, color","Cohesion, coupling, modularity, simplicity","Affordance, closure, alignment, nudge"],0,"These are the four characteristics from the Oct 27 lecture."),
+MC("ALT tags for images and redundant coding (text, icons, tactile) support which characteristic?",["Perceptibility","Operability","Simplicity","Forgiveness"],0,"Perceptibility: everyone can perceive the design regardless of sensory ability."),
+MC("Wheelchair access and minimizing repetitive actions support which characteristic?",["Perceptibility","Operability","Simplicity","Forgiveness"],1,"Operability: everyone can use it regardless of physical ability."),
+MC("Progressive disclosure and clear prompting/feedback support which characteristic?",["Perceptibility","Operability","Simplicity","Forgiveness"],2,"Simplicity: easy to understand regardless of experience, literacy or concentration."),
+MC("A technique that requires verification before an action is performed is called:",["Confirmation","Chunking","Priming","Mimicry"],0,"Confirmation dialogs prevent unintended actions."),
+MC("Combining many units of information into fewer groups so it's easier to process is:",["Chunking","Closure","Nudge","Alignment"],0,"Like grouping a phone number into 3-3-4 digits."),
+MC("The tendency to perceive separate elements as one recognizable pattern is:",["Closure","Common fate","Good continuation","Priming"],0,"Closure (e.g. the WWF logo)."),
+MC("Elements moving in the same direction are perceived as more related. This is:",["Common fate","Closure","Pragnanz","Mimicry"],0,"Common fate."),
+MC("Presenting information in descending order of importance is the:",["Inverted pyramid","Pareto chart","Nudge","Life cycle"],0,"Most important first, like news articles."),
+MC("Copying properties of familiar objects (like a trash-can icon) is called:",["Mimicry","Priming","Closure","Biophilia"],0,"Mimicry."),
+MC("A bias against ideas that originate elsewhere is called:",["Not Invented Here","Performance load","Ockham's Razor","Operant conditioning"],0,"Not Invented Here."),
+MC("Profiles for a small number of representative users are called:",["Personas","Prototypes","Stakeholders","Use cases"],0,"Personas."),
+MC("The greater the effort to accomplish a task, the less likely it will be done successfully. This is:",["Performance load","Performance vs preference","Priming","Nudge"],0,"Performance load."),
+MC("Designs that help people perform best are often not the ones they find most desirable (QWERTY vs Dvorak). This is:",["Performance versus preference","Performance load","Mimicry","Closure"],0,"Performance versus preference."),
+MC("Which is a key principle of effective brainstorming?",["Aim for quantity","Criticize weak ideas quickly","Let everyone talk at once","No time limit"],0,"Quantity, no judging, build on ideas, one conversation at a time."),
+MC("In the to-do app brainstorming activity, features were grouped into:",["Must/Shoulds (core) and Coulds (nice to have)","Hardware and software","Easy and hard","Front end and back end"],0,"Then they voted and prioritized by usability and user experience."),
+MC("Which is a leading question?",["How do you currently manage your tasks?","Don't you agree that our app is easy to use?","What problems do you face with scheduling?","Can you walk me through your day?"],1,"It pushes the user toward 'yes'."),
+MC("What does this print?",["4","3","Error","None"],0,"f(3) returns 3 + 1 = 4.","def f(x):\n    return x + 1\nprint(f(3))"),
+MC("What does this print?",["10 then None","10 then 10","None only","Error"],0,"g prints 10 but returns None, so result is None.","def g(x):\n    print(x * 2)\nresult = g(5)\nprint(result)"),
+MC("What happens when this runs?",["Prints 10","NameError","Prints None","Prints y"],1,"y is local to h(), so print(y) raises NameError.","def h():\n    y = 10\nh()\nprint(y)"),
+MC("What happens?",["Prints 5","TypeError (missing argument)","NameError","Prints 0"],1,"calculate_area() missing 1 required positional argument: 'height'.","def calculate_area(width, height):\n    return width * height\nprint(calculate_area(5))"),
+MC("What does print(add('5', '10')) output?",["15","'510'","TypeError","510.0"],1,"+ joins two strings.","def add(a, b):\n    return a + b"),
+MC("What does this print?",["25","None","5","Error"],1,"square has no return, so it gives back None.","def square(n):\n    n * n\nprint(square(5))"),
+MC("What does this print?",["Area: 50, Perimeter: 30","(50, 30)","Area: 30, Perimeter: 50","Error"],0,"The function returns two values as a tuple, unpacked into a and p.","def props(w, h):\n    return w * h, 2 * (w + h)\na, p = props(5, 10)\nprint(f'Area: {a}, Perimeter: {p}')"),
+MC("What does print(calculate_area(5, 2)) output?",["1","10","7","Error"],1,"Given arguments override the defaults, so 5 * 2 = 10. With no arguments it would be 1.","def calculate_area(width=1, height=1):\n    return width * height"),
+MC("What happens?",["Prints Hi!","NameError","Prints nothing","SyntaxError"],1,"Python runs top to bottom. The function isn't defined yet when it's called.","say_hi()\ndef say_hi():\n    print('Hi!')"),
+MC("What does the line 'greet' (no parentheses) do for def greet(): print('Hello!')?",["Runs the function","Refers to the function but doesn't run it","SyntaxError","Prints Hello!"],1,"You need greet() to call it."),
+MC("Which is NOT a benefit of modular design with functions?",["Reuse","Easier testing","Teamwork (different people build different pieces)","Code can never contain bugs"],3,"Modularity helps manage complexity but doesn't eliminate bugs."),
+MC("What does this print?",["9 6 3","10 7 4 1","3 6 9","9 6 3 0"],0,"Only numbers divisible by 3 are printed while counting down.","count = 10\nwhile count >= 1:\n    if count % 3 == 0:\n        print(count)\n    count -= 1"),
+MC("Which prints all even numbers from 10 up to and including 20?",["range(10, 20, 2)","range(10, 21, 2)","range(10, 22, 3)","range(11, 20, 2)"],1,"range(a, b, step) stops before b, so the end must be 21."),
+MC("What is the last line printed?",["2 3 4","1 2 3","0 1 2","4 5 6"],0,"i + j for i=2 gives 2 3 4. The rows are 0 1 2 / 1 2 3 / 2 3 4.","for i in range(3):\n    for j in range(3):\n        print(i + j, end=' ')\n    print()"),
+MC("What does this print?",["6","10","2","4"],0,"Only even i (2 and 4) are added: 0 + 2 + 4 = 6.","total = 0\nfor i in range(1, 5):\n    if i % 2 == 0:\n        total = total + i\nprint(total)"),
+SA("Fix all the errors. The code should find the index of 'o' in 'Python' and print a countdown from that index down to 1.","word = \"Python\"\nidx = word.index('o')\nwhile idx > 0\nprint(\"Countdown: \" + idx)\nidx = idx + 1"),
+SA("Explain the difference between a parameter and an argument, and between print and return. Give a short code example that shows both."),
+SA("Write a function get_evens(lst) that takes a list of numbers and returns a NEW list containing only the even numbers. Show a call and what it prints."),
+SA("Write a function calculate_area(length, width) that returns the area of a rectangle. Include a multi-line docstring (what it does, parameters, return value). Then show a call and its output."),
+SA("What is modularity? Give two benefits and explain how cohesion and coupling relate to it."),
+SA("Design an app for managing a small bookstore. Identify four stakeholders, one need for each, and at least three modules."),
+SA("What is paper prototyping and why do we do it? Describe the three roles in a usability session, the facilitator's rules during the session, and what happens in the post mortem."),
+SA("List the four characteristics of accessible design and give one example of each."),
+SA("Explain the empirical and rational approaches to design. Give two examples of resources and two of constraints in the design stage."),
+SA("Describe how to run an effective brainstorming session: list at least five principles/rules, the steps of a session, and how Must/Should/Could grouping and voting are used."),
+SA("List four requirements document guidelines and explain why each requirement should have a unique ID. What columns are in the requirements template?"),
+SA("Pick three of these principles: affordance, chunking, nudge, Ockham's razor, closure, inverted pyramid. Define each in your own words and give an example from software or the real world."),
+SA("Explain the 80/20 (Pareto) rule and how it can guide which features to prioritize in a software product."),
+SA("Why is communication important in software development? Who do software engineers talk to? Give two communication tips and explain what a leading question is and why to avoid it.")
+];
+const names={all:'All',tf:'True/False',mc:'Multiple choice',sa:'Short answer'};
+let mode='all',shuf=true,deck=[],i=0,score=0,done=0,missed=[],locked=false;
+const $=id=>document.getElementById(id);
+function mk(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+function shuffle(a){for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a}
+function start(list){deck=list.slice();if(shuf)shuffle(deck);i=0;score=0;done=0;missed=[];render()}
+function pool(){return Q.filter(q=>mode==='all'||q.t===mode)}
+function modes(){const b=$('modes');b.textContent='';Object.keys(names).forEach(k=>{const c=mk('button','chip',names[k]+' ('+Q.filter(q=>k==='all'||q.t===k).length+')');c.setAttribute('aria-pressed',k===mode);c.onclick=()=>{mode=k;modes();start(pool())};b.appendChild(c)})}
+function stats(){$('pos').textContent=i<deck.length?'Question '+(i+1)+' of '+deck.length:'Finished';$('sc').textContent='Score '+score+' / '+done;$('pg').style.width=(deck.length?i/deck.length*100:0)+'%'}
+function next(){i++;render()}
+function render(){
+ locked=false;stats();const card=$('card');card.textContent='';
+ if(i>=deck.length){
+  const d=mk('div','end');d.appendChild(mk('h2','','Round complete'));
+  d.appendChild(mk('p','','Graded questions: '+score+' of '+done+' correct. Items to review: '+missed.length+'.'));
+  const r=mk('div','row');r.style.justifyContent='center';
+  if(missed.length){const b=mk('button','btn','Retry missed ('+missed.length+')');b.onclick=()=>start(missed.slice());r.appendChild(b)}
+  const b2=mk('button','btn alt','New round');b2.onclick=()=>start(pool());r.appendChild(b2);
+  d.appendChild(r);card.appendChild(d);return}
+ const q=deck[i];
+ card.appendChild(mk('div','tag',{tf:'True / False',mc:'Multiple choice',sa:'Short answer'}[q.t]));
+ card.appendChild(mk('p','q',q.q));
+ if(q.c){card.appendChild(mk('pre','',q.c))}
+ if(q.t==='sa'){saUI(card,q);return}
+ const opts=q.t==='tf'?['True','False']:q.o;const ans=q.t==='tf'?(q.a?0:1):q.a;const btns=[];
+ const fb=mk('div');
+ opts.forEach((t,k)=>{const b=mk('button','opt',t);btns.push(b);b.onclick=()=>{
+  if(locked)return;locked=true;done++;const right=k===ans;if(right)score++;else missed.push(q);
+  btns.forEach((x,m)=>{x.disabled=true;if(m===ans)x.classList.add('ok');else if(m===k)x.classList.add('bad')});
+  fb.className='fb '+(right?'ok':'bad');fb.appendChild(mk('b','',right?'Correct.':'Not quite. Answer: '+opts[ans]));fb.appendChild(mk('span','',q.e));
+  const n=mk('div','row');const nb=mk('button','btn','Next question');nb.onclick=next;n.appendChild(nb);card.appendChild(fb);card.appendChild(n);nb.focus();stats()};card.appendChild(b)});
+}
+function saUI(card,q){
+ const ta=mk('textarea');ta.placeholder='Type your own answer here first (optional)';card.appendChild(ta);
+ const prompt=()=>"I'm studying for a CIS1250 (Software Design I, intro Python, requirements, user stories, use case diagrams) midterm. Give a concise model answer to this short-answer question, list the key points a marker would look for, and if I wrote an attempt, grade it out of 5 and tell me what I missed.\n\nQuestion: "+q.q+(q.c?"\n\nCode:\n"+q.c:"")+(ta.value.trim()?"\n\nMy attempt:\n"+ta.value.trim():"");
+ const row=mk('div','row');const cp=mk('button','btn','Copy prompt for Gemini');
+ const ga=mk('a','btn alt','Open Gemini');ga.href='https://gemini.google.com/app';ga.target='_blank';ga.rel='noopener';
+ const box=mk('textarea');box.style.display='none';box.readOnly=true;
+ cp.onclick=async()=>{const p=prompt();try{await navigator.clipboard.writeText(p);cp.textContent='Copied. Paste it into Gemini';box.style.display='none'}catch(e){box.value=p;box.style.display='block';box.select();cp.textContent='Select all and copy the text below'}};
+ row.appendChild(cp);row.appendChild(ga);card.appendChild(row);card.appendChild(box);
+ const r2=mk('div','row');const g=mk('button','btn alt','I got it');const m=mk('button','btn alt','Review later');
+ const fin=(ok)=>{if(locked)return;locked=true;if(!ok)missed.push(q);next()};g.onclick=()=>fin(true);m.onclick=()=>fin(false);
+ r2.appendChild(g);r2.appendChild(m);card.appendChild(r2);
+ card.appendChild(mk('div','note','Short answers aren\u2019t scored. Mark each one yourself after checking with Gemini.'));
+}
+$('shuf').onclick=e=>{shuf=!shuf;e.target.setAttribute('aria-pressed',shuf);e.target.textContent=shuf?'Shuffle on':'Shuffle off';start(pool())};
+$('rst').onclick=()=>start(pool());
+modes();start(pool());
+</script>
+</body>
+</html>

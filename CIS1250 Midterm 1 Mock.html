@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CIS1250 Midterm 1 Mock</title>
+<style>
+:root{--bg:#f4f7f9;--fg:#14202b;--card:#fff;--mut:#5b6b78;--line:#d5dee5;--acc:#1f6f8b;--accfg:#fff;--ok:#1b7f4b;--okbg:#e2f4ea;--bad:#b3261e;--badbg:#fbe7e5;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1820;--fg:#e6eef3;--card:#16242e;--mut:#93a5b2;--line:#2a3b47;--acc:#5bb6d3;--accfg:#06202b;--ok:#6fd19a;--okbg:#14352a;--bad:#ff8f86;--badbg:#3a1d1b}}
+:root[data-theme="dark"]{--bg:#0e1820;--fg:#e6eef3;--card:#16242e;--mut:#93a5b2;--line:#2a3b47;--acc:#5bb6d3;--accfg:#06202b;--ok:#6fd19a;--okbg:#14352a;--bad:#ff8f86;--badbg:#3a1d1b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:660px;margin:0 auto;padding:18px 16px 40px}
+h1{font-size:1.35rem;margin:0 0 4px}
+.sub{color:var(--mut);font-size:.9rem;margin:0 0 14px}
+.bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:6px 12px;font:inherit;font-size:.85rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
+.stat{display:flex;justify-content:space-between;color:var(--mut);font-size:.85rem;margin:6px 0}
+.prog{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.prog i{display:block;height:100%;background:var(--acc);width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+.tag{font-size:.8rem;color:var(--mut);margin-bottom:6px}
+.q{font-size:1.08rem;font-weight:600;white-space:pre-wrap;margin:0 0 12px}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;overflow-x:auto;font:.85rem/1.45 ui-monospace,Menlo,Consolas,monospace;margin:0 0 12px}
+.opt{display:block;width:100%;text-align:left;margin:0 0 8px;padding:11px 13px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:8px;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--acc)}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.bad{background:var(--badbg);border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.fb{margin-top:10px;padding:10px 12px;border-radius:8px;font-size:.93rem}
+.fb.ok{background:var(--okbg);color:var(--ok)}.fb.bad{background:var(--badbg);color:var(--bad)}
+.fb span{color:var(--fg);display:block;margin-top:3px}
+textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit;padding:10px;margin-bottom:10px;resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+main>.row{margin-bottom:8px}
+.btn{border:1px solid var(--acc);background:var(--acc);color:var(--accfg);border-radius:8px;padding:8px 13px;font:inherit;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.alt{background:transparent;color:var(--acc)}
+.btn:disabled{opacity:.45;cursor:default}
+.note{font-size:.85rem;color:var(--mut);margin-top:8px}
+.end{text-align:center}.end h2{margin:0 0 6px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<h1>CIS1250 midterm 1 mock test</h1>
+<p class="sub">True/False and multiple choice are graded here. Short answer: copy the prompt into Gemini.</p>
+<div class="row"><a class="btn alt" href="index.html">All midterms</a></div>
+<div class="bar" id="modes"></div>
+<div class="bar"><button class="chip" id="shuf" aria-pressed="true">Shuffle on</button><button class="chip" id="rst">Restart</button></div>
+<div class="stat"><span id="pos"></span><span id="sc"></span></div>
+<div class="prog"><i id="pg"></i></div>
+<div class="card" id="card"></div>
+</main>
+<script>
+const TF=(q,a,e)=>({t:'tf',q,a,e});
+const MC=(q,o,a,e,c)=>({t:'mc',q,o,a,e,c});
+const SA=(q,c)=>({t:'sa',q,c});
+const Q=[
+TF("In Python, you must explicitly declare a variable's type before using it.",false,"Python is dynamically typed. A variable is created the moment you first assign a value."),
+TF("Indentation is optional in Python.",false,"Blocks are defined by indentation, which is strictly enforced. There are no curly brackets."),
+TF('Python variable names are case-sensitive, so "age" and "Age" are two different variables.',true,"Names are case-sensitive."),
+TF('The values "5" and 5 are the same in Python.',false,'"5" is a str and 5 is an int. "5" == 5 is False.'),
+TF("Indexes in Python start at 0.",true,"s[0] is the first item."),
+TF("In Python, an if statement can exist without an else block.",true,"else and elif are optional."),
+TF("In Python, you can use the + operator to concatenate two strings.",true,"'Hello' + ', ' + 'World' gives 'Hello, World'."),
+TF("With x = 5, the expression (x > 0 and x < 10) evaluates to True.",true,"Both comparisons are True, so and gives True."),
+TF("range(5) produces the numbers 0 through 5.",false,"range(n) goes from 0 to n-1, so 0 to 4."),
+TF("s[-1] returns the last character of the string s.",true,"Negative indexes count from the end."),
+TF("In Python 3, 7 / 5 evaluates to 1.4.",true,"/ is regular division and gives a float. 7 // 5 is integer division (1)."),
+TF("A use case diagram shows how the system is implemented.",false,"Use cases are logical models. They describe what the system does, not how."),
+TF("In a use case diagram, the system boundary separates the use cases inside it from the actors outside it.",true,"Use cases go inside the box. Actors sit outside."),
+TF("A use case is usually described by a verb phrase, such as 'search products'.",true,"Use cases name a functionality or goal as a verb phrase linked to actors."),
+TF("An actor in a use case diagram can be another computer system.",true,"Actors can be a person, a company or organization, or a computer system."),
+TF("User stories should describe how the system will be implemented.",false,"User stories are about user needs, not the system or its implementation."),
+TF("The Waterfall model allows user feedback at every stage.",false,"That is a drawback of Waterfall. Agile works in small iterations with ongoing feedback."),
+TF("Implementation (programming) is the only stage of the software development process.",false,"The process includes requirements, design, implementation, testing and maintenance."),
+TF('"The system should be user friendly" is a good, measurable requirement.',false,"It is vague. Which user? How would you measure it?"),
+TF("Functional requirements describe how well the system performs (speed, reliability).",false,"Functional = what the system does. Non-functional = how it performs, plus constraints."),
+TF("Requirements creep is the gradual expansion of project scope through added requirements that seem useful but aren't relevant.",true,"Bloat, by contrast, is excessive accumulation of unnecessary or low-priority requirements."),
+MC("After running x = 5 and then x = \"hello\", what is type(x)?",["<class 'int'>","<class 'str'>","<class 'float'>","It causes an error"],1,"x is reassigned, so its type follows the new value."),
+MC("What does print(17 % 5) output?",["3","2","3.4","12"],1,"% returns the remainder. 17 = 3*5 + 2."),
+MC("What does print(17 // 5) output?",["3","3.4","2","4"],0,"// is integer (floor) division."),
+MC("Given s = 'Hello, World!', what does s[7:12] return?",["'Hello'","'World'","'World!'","', Wor'"],1,"Indexes 7 to 11 (end excluded) give 'World'."),
+MC("What does len('Hello, World!') return?",["12","13","11","14"],1,"Count every character, including the comma, space and !."),
+MC("What is my_list after this code?",["[1, 2, 4]","[1, 2, 4, 3]","[1, 2, 3, 4]","[2, 3, 4, 3]"],1,"remove() deletes only the first occurrence of the value.","my_list = [1, 2, 3, 4, 3]\nmy_list.remove(3)"),
+MC("What does my_list.pop(0) return?",["[2, 3, 4, 5]","0","1","5"],2,"pop(0) removes the item at index 0 and returns it (1). The list becomes [2, 3, 4, 5].","my_list = [1, 2, 3, 4, 5]\nmy_list.pop(0)"),
+MC("What does this code print?",["2 5 8","2 5 8 10","3 6 9","2 3 4 5 6 7 8 9"],0,"range(a, b, step) starts at 2, adds 3 each time, and stops before 10.","for i in range(2, 10, 3):\n    print(i)"),
+MC("What is the output?",["a b c d","0 1 2 3","TypeError","Nothing is printed"],2,"range() needs an integer, not a string. Use range(len(x)).","x = 'abcd'\nfor i in range(x):\n    print(i)"),
+MC("What does print(list('Python')[1]) output?",["'P'","'y'","'t'","['P','y']"],1,"list('Python') is ['P','y','t','h','o','n']. Index 1 is 'y'.",""),
+MC("What does 'Today we are learning'.split(' ')[0] return?",["'Today we are learning'","'Today'","['Today']","'learning'"],1,"split(' ') splits on spaces into a list. Index 0 is the first word."),
+MC("With a = 0 and b = 1, what does print(a or b) output?",["0","1","True","False"],1,"or returns the first truthy value. 0 is falsy, so it returns 1. (a and b returns 0.)"),
+MC("What does this print?",["15 is divisible by 2","15 is divisible by 3","15 is divisible by 5","15 is divisible by 3 and 5"],1,"In an if/elif chain only the first true branch runs. 15 % 2 != 0, 15 % 3 == 0, so it stops there.","a = 15\nif a % 2 == 0:\n    print(f'{a} is divisible by 2')\nelif a % 3 == 0:\n    print(f'{a} is divisible by 3')\nelif a % 5 == 0:\n    print(f'{a} is divisible by 5')"),
+MC("Which Python type is an ordered, changeable collection written with square brackets?",["tuple","set","list","dict"],2,"Lists use [ ]. Tuples use ( ), sets use { }, dicts use key:value pairs in { }."),
+MC("Which is the best-written requirement?",["The application must be fast.","The system should be user friendly.","The system shall generate monthly sales reports in PDF format.","The system must run on our existing operating system."],2,"It is clear, specific, measurable and testable. The others are vague."),
+MC("Which is a NON-functional requirement?",["The system must allow users to search for products by name.","The user must be able to export data as a CSV file.","The system must handle 100 transactions per second.","The user should be able to sign up with an email address."],2,"Performance describes how the system behaves, not what it does."),
+MC("Which is NOT a requirements gathering method?",["Interviews","Surveys / questionnaires","Observation","Compiling the code"],3,"Methods: interviews, questionnaires, brainstorming, observation, studying documentation."),
+MC("In 'As a <user>, I want <action> so that <benefit>', the 'so that' part gives you:",["WHO","WHAT","WHY","HOW"],2,"WHO = user, WHAT = action, WHY = benefit."),
+MC("Excessive accumulation of unnecessary or low-priority requirements is called:",["Requirements creep","Requirements bloat","Requirements tracing","Requirements testing"],1,"Creep is gradual scope expansion. Bloat is piling up unneeded requirements."),
+MC("In a use case diagram, actors represent:",["Only human users inside the system","Roles of people, organizations or systems that interact with the system","The functions the system performs","The classes in the code"],1,"Actors are roles outside the system boundary."),
+MC("Which is a drawback of Waterfall compared to Agile?",["It has no testing stage","It can't take user feedback at all stages and changes are hard","It skips requirements","It only works for Python"],1,"Waterfall is sequential. Agile iterates in small cycles."),
+MC("Which is NOT one of the 3 core categories of software stakeholders from lecture?",["Business (the why)","Development team (the how)","End users (the what)","Competitors' marketing teams"],3,"The three core categories are Business, Development Team and End Users."),
+MC("Which is a property of good requirements?",["Vague and flexible","Measurable and testable","Written after coding","Unprioritized"],1,"Good requirements are clear, concise, measurable, traceable, prioritized and testable."),
+SA("Fix the code. It should print the numbers between 5 and 10 from the list. Identify each mistake, explain why it is wrong, and give the corrected version.","numbers = (1, 5, 7, 2, 8, 19)\nfor i in range (0, numbers)\nif numbers[i] >= 5 and numbers <=10 :\nprint (\"The number \" + numbers[i] + \" is between 5 and 10\")"),
+SA("Explain why \"The application must be fast\" is a bad requirement. Rewrite it as a good one and name two qualities of good requirements."),
+SA("Write two user stories for a course management system like Courselink in the 'As a... I want... so that...' format. For each, state the actor and the goal."),
+SA("A small tennis club wants a web app to book lessons and courts. Customers need an account, can search lessons by level and time, add lessons to a cart and pay by credit card or PayPal. The manager updates lesson and court availability and contacts customers by email or phone. Identify the actors and at least five use cases, and say where actors and use cases go relative to the system boundary."),
+SA("Describe the stages of the software life cycle. Why is implementation only one stage? Give one reason Agile is often preferred over Waterfall."),
+SA("What does this code print?","for i in range(2):\n    for j in range(3):\n        print(i, j, end=' ')\n    print()"),
+SA("Explain the difference between requirements creep and requirements bloat, and give two consequences of poor requirements gathering."),
+SA("Write a Python loop that goes through my_list = [1, 2, 3, 4, 5, 6] and prints only the even numbers, using an if statement and the mod operator."),
+SA("Explain the difference between remove(), del and pop() for removing items from a list. Give a short example of each."),
+SA("Define 'stakeholder' in software development. Name the three core stakeholder categories and explain why missing a stakeholder can cause project failure."),
+SA("Draw (describe) a use case diagram for a campus library system. List the actors, at least five use cases, and the associations between them.")
+];
+const names={all:'All',tf:'True/False',mc:'Multiple choice',sa:'Short answer'};
+let mode='all',shuf=true,deck=[],i=0,score=0,done=0,missed=[],locked=false;
+const $=id=>document.getElementById(id);
+function mk(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+function shuffle(a){for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a}
+function start(list){deck=list.slice();if(shuf)shuffle(deck);i=0;score=0;done=0;missed=[];render()}
+function pool(){return Q.filter(q=>mode==='all'||q.t===mode)}
+function modes(){const b=$('modes');b.textContent='';Object.keys(names).forEach(k=>{const c=mk('button','chip',names[k]+' ('+Q.filter(q=>k==='all'||q.t===k).length+')');c.setAttribute('aria-pressed',k===mode);c.onclick=()=>{mode=k;modes();start(pool())};b.appendChild(c)})}
+function stats(){$('pos').textContent=i<deck.length?'Question '+(i+1)+' of '+deck.length:'Finished';$('sc').textContent='Score '+score+' / '+done;$('pg').style.width=(deck.length?i/deck.length*100:0)+'%'}
+function next(){i++;render()}
+function render(){
+ locked=false;stats();const card=$('card');card.textContent='';
+ if(i>=deck.length){
+  const d=mk('div','end');d.appendChild(mk('h2','','Round complete'));
+  d.appendChild(mk('p','','Graded questions: '+score+' of '+done+' correct. Items to review: '+missed.length+'.'));
+  const r=mk('div','row');r.style.justifyContent='center';
+  if(missed.length){const b=mk('button','btn','Retry missed ('+missed.length+')');b.onclick=()=>start(missed.slice());r.appendChild(b)}
+  const b2=mk('button','btn alt','New round');b2.onclick=()=>start(pool());r.appendChild(b2);
+  d.appendChild(r);card.appendChild(d);return}
+ const q=deck[i];
+ card.appendChild(mk('div','tag',{tf:'True / False',mc:'Multiple choice',sa:'Short answer'}[q.t]));
+ card.appendChild(mk('p','q',q.q));
+ if(q.c){card.appendChild(mk('pre','',q.c))}
+ if(q.t==='sa'){saUI(card,q);return}
+ const opts=q.t==='tf'?['True','False']:q.o;const ans=q.t==='tf'?(q.a?0:1):q.a;const btns=[];
+ const fb=mk('div');
+ opts.forEach((t,k)=>{const b=mk('button','opt',t);btns.push(b);b.onclick=()=>{
+  if(locked)return;locked=true;done++;const right=k===ans;if(right)score++;else missed.push(q);
+  btns.forEach((x,m)=>{x.disabled=true;if(m===ans)x.classList.add('ok');else if(m===k)x.classList.add('bad')});
+  fb.className='fb '+(right?'ok':'bad');fb.appendChild(mk('b','',right?'Correct.':'Not quite. Answer: '+opts[ans]));fb.appendChild(mk('span','',q.e));
+  const n=mk('div','row');const nb=mk('button','btn','Next question');nb.onclick=next;n.appendChild(nb);card.appendChild(fb);card.appendChild(n);nb.focus();stats()};card.appendChild(b)});
+}
+function saUI(card,q){
+ const ta=mk('textarea');ta.placeholder='Type your own answer here first (optional)';card.appendChild(ta);
+ const prompt=()=>"I'm studying for a CIS1250 (Software Design I, intro Python, requirements, user stories, use case diagrams) midterm. Give a concise model answer to this short-answer question, list the key points a marker would look for, and if I wrote an attempt, grade it out of 5 and tell me what I missed.\n\nQuestion: "+q.q+(q.c?"\n\nCode:\n"+q.c:"")+(ta.value.trim()?"\n\nMy attempt:\n"+ta.value.trim():"");
+ const row=mk('div','row');const cp=mk('button','btn','Copy prompt for Gemini');
+ const ga=mk('a','btn alt','Open Gemini');ga.href='https://gemini.google.com/app';ga.target='_blank';ga.rel='noopener';
+ const box=mk('textarea');box.style.display='none';box.readOnly=true;
+ cp.onclick=async()=>{const p=prompt();try{await navigator.clipboard.writeText(p);cp.textContent='Copied. Paste it into Gemini';box.style.display='none'}catch(e){box.value=p;box.style.display='block';box.select();cp.textContent='Select all and copy the text below'}};
+ row.appendChild(cp);row.appendChild(ga);card.appendChild(row);card.appendChild(box);
+ const r2=mk('div','row');const g=mk('button','btn alt','I got it');const m=mk('button','btn alt','Review later');
+ const fin=(ok)=>{if(locked)return;locked=true;if(!ok)missed.push(q);next()};g.onclick=()=>fin(true);m.onclick=()=>fin(false);
+ r2.appendChild(g);r2.appendChild(m);card.appendChild(r2);
+ card.appendChild(mk('div','note','Short answers aren\u2019t scored. Mark each one yourself after checking with Gemini.'));
+}
+$('shuf').onclick=e=>{shuf=!shuf;e.target.setAttribute('aria-pressed',shuf);e.target.textContent=shuf?'Shuffle on':'Shuffle off';start(pool())};
+$('rst').onclick=()=>start(pool());
+modes();start(pool());
+</script>
+</body>
+</html>
